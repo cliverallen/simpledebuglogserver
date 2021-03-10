@@ -1,0 +1,15 @@
+$(
+    class Logdata {
+        [string]$Timestamp
+        [string]$Data
+        [string]$Category
+
+    }
+    $revarr = $data.datalog.logdata.Clone()
+    [array]::Reverse($revarr)
+    "<pre><code>"
+    foreach($a in $revarr | select -First $data.lines) {
+         $a.Timestamp + " " + $a.Category + " " + $a.Data + "<br>";
+    }
+    "</code></pre>"
+)
