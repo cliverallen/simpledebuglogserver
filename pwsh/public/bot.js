@@ -11,15 +11,18 @@ document.getElementById("button-warning").onclick = function setCategory() {docu
 document.getElementById("button-error").onclick = function setCategory() {document.getElementById("category").textContent = 'error';update();};
 document.getElementById("button-clear").onclick = function setCategory() {document.getElementById("category").textContent = '';update();};
 // document.getElementById("loglines").onchange = linesUpdate;
-if(!sessionStorage.updateTimer) {
-    console.log('Setting Inital Timer');
-    sessionStorage.updateTimer = 0;
-} else {
-    toggleAutorefresh();
-}
+// if(!sessionStorage.updateTimer) {
+//     console.log('Setting Inital Timer');
+//     sessionStorage.updateTimer = 0;
+// } else {
+//     toggleAutorefresh();
+// }
 // $query = "lines=" + document.getElementById("loglines").value;
 
 function toggleAutorefresh() {
+    if(!sessionStorage.updateTimer) {
+        sessionStorage.updateTimer = 0;
+    }
     if(sessionStorage.updateTimer == 0) {
         update();
         sessionStorage.updateTimer = setInterval(update,5000);
@@ -35,9 +38,6 @@ function linesUpdate() {
     $query = "lines=" + document.getElementById("loglines").value;
 }
 
-// function setCategory(category) {
-//     $filter = "category=" + category
-// }
 
 function update() {
     $query = "lines=" + document.getElementById("loglines").value;
