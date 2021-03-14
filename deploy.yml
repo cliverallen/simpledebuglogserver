@@ -56,7 +56,7 @@ jobs:
   - task: PowerShell@2
     inputs:
       targetType: 'filePath'
-      filePath: $(System.DefaultWorkingDirectory)/generatePassword.ps1 $(System.DefaultWorkingDirectory
+      filePath: $(System.DefaultWorkingDirectory)/generatePassword.ps1 $(System.DefaultWorkingDirectory)
 
   - task: AzureResourceGroupDeployment@2
     displayName: 'Azure Deployment:Create Azure Container Registry, Azure WebApp Service'
