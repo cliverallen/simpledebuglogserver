@@ -5,11 +5,23 @@ $(
         [string]$Category
 
     }
-    $revarr = $data.datalog.logdata.Clone()
-    [array]::Reverse($revarr)
-    "<pre><code>"
-    foreach($a in $revarr | select -First $data.lines) {
-         $a.Timestamp + " " + $a.Category + " " + $a.Data + "<br>";
+    $revarr = $data.datalog.logdata.Clone();
+    [array]::Reverse($revarr);
+    
+    $spcode = '<span style="color:blue">';
+    "<pre><code>";
+    foreach($a in $revarr | select -First $data.lines )
+    {
+        switch($a.Category.ToLower())
+        {
+            "success" {$spcode = '<span style="color:green">';Break}
+            "info" {$spcode = '<span style="color:blue">';Break}
+            "warning" {$spcode = '<span style="color:orange">';Break}
+            "error" {$spcode = '<span style="color:red">';Break}
+        }
+        if(($a.Category.ToLower() -eq $data.category) -or ($null -eq $data.category) -or ($data.category -eq "")) {
+            " " + $spcode + $a.Timestamp + " " + $a.Category + " " + $a.Data + "</span><br>";
+        }
     }
-    "</code></pre>"
+    "</code></pre>";
 )

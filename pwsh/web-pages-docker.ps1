@@ -42,11 +42,21 @@ Start-PodeServer -Threads 2 {
     }
     # Set-PodeState -Name 'hash' -Value @{ 'logdata' = @{}; } | Out-Null
     Set-PodeState -Name 'hash' -Value @{ 'logdata' = @(); } | Out-Null
+    Set-PodeState -Name 'settings' -Value @{} | Out-Null
+    Restore-PodeState -Path './settings.json'
     # Set-PodeState -Name 'hash' -Value @() | Out-Null
     # API Loging Route
     Add-PodeRoute -Method Get -Path '/api/addlog' -ScriptBlock {
         Lock-PodeObject -Object $WebEvent.Lockable {
-
+            $settings = (Get-PodeState -Name 'settings')
+            $bearertoken = Get-PodeHeader -Name 'Authorization'
+            $savedtoken = "Bearer " + $settings.token
+            Write-Host "Token received: " $bearertoken
+            Write-Host "Token required: " $settings.usetoken
+            if($settings.usetoken -eq "on" -and $savedtoken -ne $bearertoken) {
+                Write-Host "Client not authenticated"
+                exit;
+            }
             # attempt to get the hashtable from the state
             $hash = (Get-PodeState -Name 'hash')
 
@@ -57,8 +67,17 @@ Start-PodeServer -Threads 2 {
             $data.Category = $WebEvent.Query['category']
             $data.Data = $WebEvent.Query['log']
             $data.Timestamp = $now
-            $hash.logdata += $data
-            Write-Host "Data " $hash
+            $localCopy = $hash.logdata.Clone()
+            $localCopy += $data
+            if($localCopy.Count -gt 500) {
+                $hash.logdata = $localCopy[1..500]    
+            } else {
+                $hash.logdata = $localCopy
+            }
+            # $hash.logdata += $data
+
+            
+            # Write-Host "Data " $hash
             # save the state to file
             # Save-PodeState -Path './state.json'
         }
@@ -84,22 +103,42 @@ Start-PodeServer -Threads 2 {
 
             # get the hashtable from the state and return it
             $hash = (Get-PodeState -Name 'hash')
+            $settings = (Get-PodeState -Name 'settings')
             $WebEvent.Session.Data.Views++
         # Write-PodeViewResponse -Path 'simple' -Data @{ 'numbers' = @(1, 2, 3); }
-            Write-PodeViewResponse -Path 'simple' -Data @{ 'datalog' = $hash; }
+            Write-PodeViewResponse -Path 'simple' -Data @{ 'datalog' = $hash; 'settings' = $settings; 'showsettings' = $WebEvent.Query['settings']; }
         # Write-PodeViewResponse -Path 'auth-home' -Data @{
         #     Username = $WebEvent.Auth.User.Name
         #     Views = $WebEvent.Session.Data.Views
         # }
         }
     }
+    Add-PodeRoute -Method Get -Path '/settings' -ScriptBlock {
+        Lock-PodeObject -Object $WebEvent.Lockable {
+            $settings = (Get-PodeState -Name 'settings')
+            $WebEvent.Session.Data.Views++
+            Write-PodeViewResponse -Path 'settings' -Data @{ 'settings' = $settings; }
+        }
+    }
+    Add-PodeRoute -Method Get -Path '/updatesettings' -ScriptBlock {
+        Lock-PodeObject -Object $WebEvent.Lockable {
+            $settings = (Get-PodeState -Name 'settings')
+            $WebEvent.Session.Data.Views++
+            $settings.usetoken = $WebEvent.Query['tokenactive']
+            $settings.token = $WebEvent.Query['tokencode']
+            Write-Host $WebEvent.Query['tokenactive'] $WebEvent.Query['tokencode']
+            Save-PodeState -Path './settings.json'
+            # Write-PodeViewResponse -Path 'settings' -Data @{ 'settings' = $settings; }
+        }
+    }
+
     Add-PodeRoute -Method Get -Path '/ajax' -ScriptBlock {
         Lock-PodeObject -Object $WebEvent.Lockable {
 
             # get the hashtable from the state and return it
             $hash = (Get-PodeState -Name 'hash')
             $WebEvent.Session.Data.Views++
-            Write-PodeViewResponse -Path 'ajaxlog' -Data @{ 'datalog' = $hash; 'lines' = $WebEvent.Query['lines']; }
+            Write-PodeViewResponse -Path 'ajaxlog' -Data @{ 'datalog' = $hash; 'lines' = $WebEvent.Query['lines']; 'category' = $WebEvent.Query['category']; }
         }
     }    
 

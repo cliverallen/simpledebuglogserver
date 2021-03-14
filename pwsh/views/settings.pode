@@ -1,0 +1,50 @@
+$(
+    if($null -eq $data.settings.token) {
+        $authToken =  ([char[]]([char]65..[char]90) + [char[]]([char]97..[char]122) + 0..9 | sort-object {Get-Random})[0..100] -join '';
+    } else {
+        $authToken = $data.settings.token;
+    }
+)
+<form class="pure-form">
+    <fieldset>
+        <legend>Use Bearer Token to log data?</legend>
+        Activate Beaer Authentication?
+        <input type="checkbox" value="active" id="tokenactive" placeholder="Use Token" $(if($data.settings.usetoken -eq "on") {"checked";})/>
+        <input type="password" id="tokenCode" placeholder="Token" value="$(if($data.settings.usetoken -eq "on") {$data.settings.token} else {$authToken})"/>
+        <input type="button" id="showToken" style="border: none;width: 30px;height: 30px;background: url(/img/show.png) no-repeat;background-size: 30px 30px;">
+        <button type="submit" id="updateToken" class="pure-button pure-button-primary">Update</button>
+    </fieldset>
+</form>
+<script>
+(function (window, document) {
+
+    document.getElementById("showToken").onclick = showToken;
+    document.getElementById("updateToken").onclick = updateToken;
+    
+    function updateToken() {
+        var status = ""
+        if(document.getElementById("tokenactive").checked) {
+            status = "on"
+        }
+        var query = "tokenactive=" + status + "&tokencode=" + document.getElementById("tokenCode").value;
+        var url = "/updatesettings?" + query;
+        const Http = new XMLHttpRequest();
+        // const url='https://jsonplaceholder.typicode.com/posts';
+        Http.open("GET", url);
+        Http.send();
+
+        Http.onreadystatechange = (e) => {
+            console.log(Http.responseText)
+        }
+    }
+    function showToken() {
+        var x = document.getElementById("tokenCode");
+        if (x.type === "password") {
+          x.type = "text";
+        } else {
+          x.type = "password";
+        }
+    }
+    
+}(this, this.document));
+</script>
