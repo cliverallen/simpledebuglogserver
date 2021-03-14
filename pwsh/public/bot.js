@@ -9,6 +9,7 @@ document.getElementById("button-success").onclick = function setCategory() {docu
 document.getElementById("button-info").onclick = function setCategory() {document.getElementById("category").textContent = 'info';update();};
 document.getElementById("button-warning").onclick = function setCategory() {document.getElementById("category").textContent = 'warning';update();};
 document.getElementById("button-error").onclick = function setCategory() {document.getElementById("category").textContent = 'error';update();};
+document.getElementById("button-clear").onclick = function setCategory() {document.getElementById("category").textContent = '';update();};
 // document.getElementById("loglines").onchange = linesUpdate;
 if(!sessionStorage.updateTimer) {
     console.log('Setting Inital Timer');

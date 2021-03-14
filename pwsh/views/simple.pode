@@ -25,33 +25,47 @@
         .button-success,
         .button-error,
         .button-warning,
-        .button-secondary {
-            color: white;
-            border-radius: 4px;
-            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
-        }
 
         .button-success {
             background: rgb(28, 184, 65);
             width: 150px;
+            color: white;
+            border-radius: 4px;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2)
             /* this is a green */
         }
 
         .button-error {
             background: rgb(202, 60, 60);
             width: 150px;
+            color: white;
+            border-radius: 4px;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2)
             /* this is a maroon */
         }
 
         .button-warning {
             background: rgb(223, 117, 20);
             width: 150px;
+            color: white;
+            border-radius: 4px;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2)
             /* this is an orange */
         }
-
-        .button-secondary {
+         .button-clear {
+            background: white;
+            width: 150px;
+            color: black;
+            border-radius: 4px;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2)
+            /* this is an orange */
+        }
+        .button-info {
             background: rgb(66, 184, 221);
             width: 150px;
+            color: white;
+            border-radius: 4px;
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2)
             /* this is a light blue */
         }
     </style>
@@ -60,9 +74,10 @@
 
             <ul class="pure-menu-list">
                 <li class="pure-menu-item"><button id="button-success" class="button-success pure-button">Success</button></li>
-                <li class="pure-menu-item"><button id="button-info" class="button-secondary pure-button">Info</button></li>
+                <li class="pure-menu-item"><button id="button-info" class="button-info pure-button">Info</button></li>
                 <li class="pure-menu-item"><button id="button-warning" class="button-warning pure-button">Warning</button></li>
                 <li class="pure-menu-item"><button id="button-error" class="button-error pure-button">Error</button></li>
+                <li class="pure-menu-item"><button id="button-clear" class="button-clear pure-button">Clear</button></li>
                 <li class="pure-menu-item"><a href="/" class="pure-menu-link">Home</a></li>
                 <li class="pure-menu-item"><a href="/?settings=1" class="pure-menu-link">Settings</a></li>
             </ul>
