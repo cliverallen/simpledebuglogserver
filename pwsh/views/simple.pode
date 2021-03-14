@@ -59,18 +59,12 @@
             <a class="pure-menu-heading" href="#company">Filter</a>
 
             <ul class="pure-menu-list">
-            <li class="pure-menu-item"><button id="button-success" class="button-success pure-button">Success</button></li>
-            <li class="pure-menu-item"><button id="button-info" class="button-secondary pure-button">Info</button></li>
-            <li class="pure-menu-item"><button id="button-warning" class="button-warning pure-button">Warning</button></li>
-            <li class="pure-menu-item"><button id="button-error" class="button-error pure-button">Error</button></li>
+                <li class="pure-menu-item"><button id="button-success" class="button-success pure-button">Success</button></li>
+                <li class="pure-menu-item"><button id="button-info" class="button-secondary pure-button">Info</button></li>
+                <li class="pure-menu-item"><button id="button-warning" class="button-warning pure-button">Warning</button></li>
+                <li class="pure-menu-item"><button id="button-error" class="button-error pure-button">Error</button></li>
                 <li class="pure-menu-item"><a href="/" class="pure-menu-link">Home</a></li>
                 <li class="pure-menu-item"><a href="/?settings=1" class="pure-menu-link">Settings</a></li>
-
-                <li class="pure-menu-item menu-item-divided pure-menu-selected">
-                    <a href="#" class="pure-menu-link">Services</a>
-                </li>
-
-                <li class="pure-menu-item"><a href="#contact" class="pure-menu-link">Contact</a></li>
             </ul>
 
         </div>

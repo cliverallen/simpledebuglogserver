@@ -25,7 +25,7 @@ Start-PodeServer -Threads 2 {
         param($username, $password)
 
         # here you'd check a real user storage, this is just for example
-        if ($username -eq 'logmon' -and $password -eq '###PASS###') {
+        if ($username -eq 'logmon' -and $password -eq 'logmon') {
             # /usr/src/app/clivebot.ps1 "User $username has logged in"
             return @{
                 User = @{
@@ -98,7 +98,7 @@ Start-PodeServer -Threads 2 {
     # home page:
     # redirects to login page if not authenticated
     # Add-PodeRoute -Method Get -Path '/' -Authentication Login -ScriptBlock {
-    Add-PodeRoute -Method Get -Path '/' -Authentication Login -ScriptBlock {
+    Add-PodeRoute -Method Get -Path '/' -ScriptBlock {
         Lock-PodeObject -Object $WebEvent.Lockable {
 
             # get the hashtable from the state and return it
@@ -113,14 +113,14 @@ Start-PodeServer -Threads 2 {
         # }
         }
     }
-    Add-PodeRoute -Method Get -Path '/settings' -Authentication Login -ScriptBlock {
+    Add-PodeRoute -Method Get -Path '/settings' -ScriptBlock {
         Lock-PodeObject -Object $WebEvent.Lockable {
             $settings = (Get-PodeState -Name 'settings')
             $WebEvent.Session.Data.Views++
             Write-PodeViewResponse -Path 'settings' -Data @{ 'settings' = $settings; }
         }
     }
-    Add-PodeRoute -Method Get -Path '/updatesettings' -Authentication Login -ScriptBlock {
+    Add-PodeRoute -Method Get -Path '/updatesettings' -ScriptBlock {
         Lock-PodeObject -Object $WebEvent.Lockable {
             $settings = (Get-PodeState -Name 'settings')
             $WebEvent.Session.Data.Views++
@@ -132,7 +132,7 @@ Start-PodeServer -Threads 2 {
         }
     }
 
-    Add-PodeRoute -Method Get -Path '/ajax' -Authentication Login -ScriptBlock {
+    Add-PodeRoute -Method Get -Path '/ajax' -ScriptBlock {
         Lock-PodeObject -Object $WebEvent.Lockable {
 
             # get the hashtable from the state and return it
@@ -161,11 +161,28 @@ Start-PodeServer -Threads 2 {
     # to purge the currently authenticated session, and then redirect back to the login page
     Add-PodeRoute -Method Post -Path '/logout' -Authentication Login -Logout
 
+    # GET request for web page on "localhost:8085/"
+    # Add-PodeRoute -Method Get -Path '/' -ScriptBlock {
+    #     Write-PodeViewResponse -Path 'simple' -Data @{ 'numbers' = @(1, 2, 3); }
+    # }
+
+    Add-PodeRoute -Method Post -Path '/msg' -ScriptBlock {
+        # /usr/src/app/clivebot.ps1 | Write-PodeHtmlResponse
+        # /usr/src/app/clivebotfcchannely.ps1 | Write-PodeHtmlResponse
+    }
 
     # GET request throws fake "500" server error status code
     Add-PodeRoute -Method Get -Path '/error' -ScriptBlock {
         Set-PodeResponseStatus -Code 500
     }
 
+    # PUT update a file to trigger monitor
+    Add-PodeRoute -Method Put -Path '/file' -ScriptBlock {
+        'Hello, world!' | Out-File -FilePath "$($PodeContext.Server.Root)/file.txt" -Append -Force
+    }
+
+    Add-PodeRoute -Method Get -Path '/user/:userId' -ScriptBlock {
+        Write-PodeJsonResponse -Value @{ UserId = $WebEvent.Parameters['userId'] }
+    }
 
 }
