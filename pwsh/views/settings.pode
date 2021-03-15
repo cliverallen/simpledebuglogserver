@@ -29,15 +29,15 @@ $(
         var query = "tokenactive=" + status + "&tokencode=" + document.getElementById("tokenCode").value;
         var url = "/updatesettings?" + query;
         var jqxhr = $.ajax(url);
-        # const Http = new XMLHttpRequest();
-        # setTimeout(() => {  console.log("World!"); }, 500);
-        # // const url='https://jsonplaceholder.typicode.com/posts';
-        # Http.open("GET", url);
-        # Http.send();
+        // const Http = new XMLHttpRequest();
+        // setTimeout(() => {  console.log("World!"); }, 500);
+        // const url='https://jsonplaceholder.typicode.com/posts';
+        // Http.open("GET", url);
+        // Http.send();
 
-        # Http.onreadystatechange = (e) => {
-        #     console.log(Http.responseText)
-        # }
+        // Http.onreadystatechange = (e) => {
+        //    console.log(Http.responseText)
+        //}
     }
     function showToken() {
         var x = document.getElementById("tokenCode");
