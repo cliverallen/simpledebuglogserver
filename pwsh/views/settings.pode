@@ -15,6 +15,7 @@ $(
         <button type="submit" id="updateToken" class="pure-button pure-button-primary">Update</button>
     </fieldset>
 </form>
+<div id="fake"></div>
 <script>
 (function (window, document) {
 
@@ -28,7 +29,8 @@ $(
         }
         var query = "tokenactive=" + status + "&tokencode=" + document.getElementById("tokenCode").value;
         var url = "/updatesettings?" + query;
-        var jqxhr = $.ajax(url);
+        $('#fake').load(url);
+        //var jqxhr = $.ajax(url);
         // const Http = new XMLHttpRequest();
         // setTimeout(() => {  console.log("World!"); }, 500);
         // const url='https://jsonplaceholder.typicode.com/posts';
