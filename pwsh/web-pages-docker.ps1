@@ -125,12 +125,18 @@ Start-PodeServer -Threads 2 {
             $hash = (Get-PodeState -Name 'hash')
             $settings = (Get-PodeState -Name 'settings')
             $WebEvent.Session.Data.Views++
-            $settings.usetoken = $WebEvent.Query['tokenactive']
-            $settings.token = $WebEvent.Query['tokencode']
-            foreach ($item in $WebEvent.Query) {
-                Write-Host $item.key + " " + $item.value
+            $active = ""
+            if($null -ne $WebEvent.Query['tokenactive']) {
+                $active = "on"
             }
-            Write-Host $WebEvent.Query['tokenactive'] $WebEvent.Query['tokencode']
+            $settings.usetoken = $active
+            $settings.token = $WebEvent.Query['tokencode']
+            
+            # $WebEvent.Query.keys | ForEach-Object{
+            #     $message = '{0} is {1}' -f $_, $WebEvent.Query[$_]
+            #     Write-Host $message
+            # }
+            Write-Host $WebEvent.Query['tokenactive']  " : "  $WebEvent.Query['tokencode']
             Save-PodeState -Path './settings.json'
             Write-PodeViewResponse -Path 'simple' -Data @{ 'datalog' = $hash; 'settings' = $settings; 'showsettings' = $WebEvent.Query['settings']; }
             # Write-PodeViewResponse -Path 'settings' -Data @{ 'settings' = $settings; }

@@ -5,12 +5,12 @@ $(
         $authToken = $data.settings.token;
     }
 )
-<form class="pure-form">
+<form class="pure-form" method="get"  action="/updatesettings">
     <fieldset>
         <legend>Use Bearer Token to log data?</legend>
         Activate Beaer Authentication?
-        <input type="checkbox" value="active" id="tokenactive" placeholder="Use Token" $(if($data.settings.usetoken -eq "on") {"checked";})/>
-        <input type="password" id="tokenCode" placeholder="Token" value="$(if($data.settings.usetoken -eq "on") {$data.settings.token} else {$authToken})"/>
+        <input type="checkbox" name="tokenactive" value="active" id="tokenactive" placeholder="Use Token" $(if($data.settings.usetoken -eq "on") {"checked";})/>
+        <input type="password" name="tokencode" id="tokenCode" placeholder="Token" value="$(if($data.settings.usetoken -eq "on") {$data.settings.token} else {$authToken})"/>
         <input type="button" id="showToken" style="border: none;width: 30px;height: 30px;background: url(/img/show.png) no-repeat;background-size: 30px 30px;">
         <input type="submit" class="pure-button pure-button-primary" value="Submit">
         <button type="submit" id="updateToken" class="pure-button pure-button-primary">Update</button>
