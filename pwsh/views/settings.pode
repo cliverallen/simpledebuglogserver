@@ -29,6 +29,7 @@ $(
         var query = "tokenactive=" + status + "&tokencode=" + document.getElementById("tokenCode").value;
         var url = "/updatesettings?" + query;
         const Http = new XMLHttpRequest();
+        setTimeout(() => {  console.log("World!"); }, 500);
         // const url='https://jsonplaceholder.typicode.com/posts';
         Http.open("GET", url);
         Http.send();
