@@ -1,7 +1,7 @@
 (function (window, document) {
 
     document.getElementById("showToken").onclick = showToken;
-    document.getElementById("updateToken").onclick = updateToken;
+    // document.getElementById("updateToken").onclick = updateToken;
     
     function updateToken() {
         var status = ""

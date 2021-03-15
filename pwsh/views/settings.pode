@@ -12,6 +12,7 @@ $(
         <input type="checkbox" value="active" id="tokenactive" placeholder="Use Token" $(if($data.settings.usetoken -eq "on") {"checked";})/>
         <input type="password" id="tokenCode" placeholder="Token" value="$(if($data.settings.usetoken -eq "on") {$data.settings.token} else {$authToken})"/>
         <input type="button" id="showToken" style="border: none;width: 30px;height: 30px;background: url(/img/show.png) no-repeat;background-size: 30px 30px;">
+        <input type="submit" class="pure-button pure-button-primary" value="Submit">
         <button type="submit" id="updateToken" class="pure-button pure-button-primary">Update</button>
     </fieldset>
 </form>
