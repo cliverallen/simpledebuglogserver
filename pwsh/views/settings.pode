@@ -12,9 +12,14 @@ $(
         <input type="checkbox" name="tokenactive" value="active" id="tokenactive" placeholder="Use Token" $(if($data.settings.usetoken -eq "on") {"checked";})/>
         <input type="password" name="tokencode" id="tokenCode" placeholder="Token" value="$(if($data.settings.usetoken -eq "on") {$data.settings.token} else {$authToken})"/>
         <input type="button" id="showToken" style="border: none;width: 30px;height: 30px;background: url(/img/show.png) no-repeat;background-size: 30px 30px;">
-        <input type="submit" class="pure-button pure-button-primary" value="Submit">
-        <button type="submit" id="updateToken" class="pure-button pure-button-primary">Update</button>
+        <input type="submit" class="pure-button pure-button-primary" value="Update">
     </fieldset>
 </form>
-<div id="fake"></div>
+<div id="codeusage" style="display:block;">
+<pre><code>
+Powershell Usgae:
+$headers = @{Authorization = "$($authToken)"}
+Invoke-RestMethod -Headers $headers -Uri 'https://henditdockerapp.azurewebsites.net/api/addlog?log=The job completed successfully&category=info'
+</code></pre>
+</div>
 <script src="settings.js"></script>
