@@ -19,7 +19,7 @@ $(
 <pre><code>
 Powershell Usgae:
 $headers = @{Authorization = "$($authToken)"}
-Invoke-RestMethod -Headers $headers -Uri 'https://henditdockerapp.azurewebsites.net/api/addlog?log=The job completed successfully&category=info'
+Invoke-RestMethod -Headers $headers -Uri $url
 </code></pre>
 </div>
 <script src="settings.js"></script>
