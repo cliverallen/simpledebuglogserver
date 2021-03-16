@@ -1,3 +1,3 @@
 # simpledebuglogserver
 
-Please note this project is currently in an Aplha state.
+Please note this project is currently in an Alpha state.
