@@ -69,7 +69,7 @@
             /* this is a light blue */
         }
     </style>
-            <div id="category" style="display: none;"></div>
+            <!-- <div id="category" style="display: none;"></div> -->
             <a class="pure-menu-heading" href="#company">Filter</a>
 
             <ul class="pure-menu-list">
@@ -91,8 +91,8 @@
             <h2></h2>
         </div>
 
-        <div class="content">
-            <div>
+        <div>
+            <div class="content">
                 <button id="autostarttoggle" class="pure-button">Toggle Auto Refresh On</button>
                 <button id="manualrefresh" class="pure-button">Refresh</button>
                 <label for="loglines">No. of lines to show:</label>
@@ -101,12 +101,15 @@
                 <option value="50">50</option>
                 <option value="100">100</option>
                 <option value="200">200</option>
+                <option value="500">500</option>
                 </select>
+                Filter:<span id="category"></span>
+                
                 <br>
             </div>
             $(
               if($data.showsettings -eq 1){
-                    Use-PodePartialView -Path 'settings' -data @{ 'settings' = $data.settings};
+                    Use-PodePartialView -Path 'settings' -data @{ 'settings' = $data.settings; 'url' = $data.url};
               } else {
                     '<div id="logdata"></div>';    
               }

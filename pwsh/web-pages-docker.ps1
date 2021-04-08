@@ -25,7 +25,7 @@ Start-PodeServer -Threads 2 {
         param($username, $password)
 
         # here you'd check a real user storage, this is just for example
-        if ($username -eq 'logmon' -and $password -eq '###PASS###') {
+        #if ($username -eq 'logmon' -and $password -eq '###PASS###') {
             # /usr/src/app/clivebot.ps1 "User $username has logged in"
             return @{
                 User = @{
@@ -34,7 +34,7 @@ Start-PodeServer -Threads 2 {
                     Type = 'Human'
                 }
             }
-        } #else {
+        #} #else {
         #     /usr/src/app/clivebot.ps1 "Someone tried to hack us with $username and $password"
         # }
 
@@ -50,7 +50,7 @@ Start-PodeServer -Threads 2 {
         Lock-PodeObject -Object $WebEvent.Lockable {
             $settings = (Get-PodeState -Name 'settings')
             $bearertoken = Get-PodeHeader -Name 'Authorization'
-            $savedtoken = "Bearer " + $settings.token
+            $savedtoken = $settings.token
             Write-Host "Token received: " $bearertoken
             Write-Host "Token required: " $settings.usetoken
             if($settings.usetoken -eq "on" -and $savedtoken -ne $bearertoken) {
@@ -65,7 +65,7 @@ Start-PodeServer -Threads 2 {
             # $hash.logdata.Add($now,$WebEvent.Query['log'])
             $data = [Logdata]::new()
             $data.Category = $WebEvent.Query['category']
-            $data.Data = $WebEvent.Query['log']
+            $data.Data = [uri]::UnescapeDataString($WebEvent.Query['log'])
             $data.Timestamp = $now
             $localCopy = $hash.logdata.Clone()
             $localCopy += $data
@@ -106,20 +106,25 @@ Start-PodeServer -Threads 2 {
             $settings = (Get-PodeState -Name 'settings')
             $WebEvent.Session.Data.Views++
         # Write-PodeViewResponse -Path 'simple' -Data @{ 'numbers' = @(1, 2, 3); }
-            Write-PodeViewResponse -Path 'simple' -Data @{ 'datalog' = $hash; 'settings' = $settings; 'showsettings' = $WebEvent.Query['settings']; }
+            Write-PodeViewResponse -Path 'simple' -Data @{ 'datalog' = $hash; 'settings' = $settings; 'showsettings' = $WebEvent.Query['settings']; 'url' =  $WebEvent.Endpoint }
         # Write-PodeViewResponse -Path 'auth-home' -Data @{
         #     Username = $WebEvent.Auth.User.Name
         #     Views = $WebEvent.Session.Data.Views
         # }
         }
     }
-    Add-PodeRoute -Method Get -Path '/settings' -Authentication Login -ScriptBlock {
-        Lock-PodeObject -Object $WebEvent.Lockable {
-            $settings = (Get-PodeState -Name 'settings')
-            $WebEvent.Session.Data.Views++
-            Write-PodeViewResponse -Path 'settings' -Data @{ 'settings' = $settings; }
-        }
-    }
+    # Add-PodeRoute -Method Get -Path '/settings' -Authentication Login -ScriptBlock {
+    #     Lock-PodeObject -Object $WebEvent.Lockable {
+    #         $settings = (Get-PodeState -Name 'settings')
+    #         $WebEvent.Session.Data.Views++
+    #         $WebEvent | Out-Default
+    #         # $WebEvent.Endpoint.keys | ForEach-Object{
+    #         #     $message = '{0} is {1}' -f $_, $WebEvent.Endpoint[$_]
+    #         #     Write-Host $message
+    #         # }
+    #         Write-PodeViewResponse -Path 'settings' -Data @{ 'settings' = $settings; 'url' =  $WebEvent.Endpoint['Address']  }
+    #     }
+    # }
     Add-PodeRoute -Method Get -Path '/updatesettings' -Authentication Login -ScriptBlock {
         Lock-PodeObject -Object $WebEvent.Lockable {
             $hash = (Get-PodeState -Name 'hash')
