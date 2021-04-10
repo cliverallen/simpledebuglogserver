@@ -53,30 +53,29 @@ Start-PodeServer -Threads 2 {
             $savedtoken = $settings.token
             Write-Host "Token received: " $bearertoken
             Write-Host "Token required: " $settings.usetoken
-            if($settings.usetoken -eq "on" -and $savedtoken -ne $bearertoken) {
-                Write-Host "Client not authenticated"
-                exit;
-            }
-            # attempt to get the hashtable from the state
-            $hash = (Get-PodeState -Name 'hash')
-
-            # add a random number
-            $now=Get-Date
-            # $hash.logdata.Add($now,$WebEvent.Query['log'])
-            $data = [Logdata]::new()
-            $data.Category = $WebEvent.Query['category']
-            $data.Data = [uri]::UnescapeDataString($WebEvent.Query['log'])
-            $data.Timestamp = $now
-            $localCopy = $hash.logdata.Clone()
-            $localCopy += $data
-            if($localCopy.Count -gt 500) {
-                $hash.logdata = $localCopy[1..500]    
-            } else {
-                $hash.logdata = $localCopy
-            }
-            # $hash.logdata += $data
+            if(($settings.usetoken -eq "on" -and $savedtoken -eq $bearertoken) -or $settings.usetoken -ne "on" ) {
 
             
+                # attempt to get the hashtable from the state
+                $hash = (Get-PodeState -Name 'hash')
+
+                # add a random number
+                $now=Get-Date
+                # $hash.logdata.Add($now,$WebEvent.Query['log'])
+                $data = [Logdata]::new()
+                $data.Category = $WebEvent.Query['category']
+                $data.Data = [uri]::UnescapeDataString($WebEvent.Query['log'])
+                $data.Timestamp = $now
+                $localCopy = $hash.logdata.Clone()
+                $localCopy += $data
+                if($localCopy.Count -gt 500) {
+                    $hash.logdata = $localCopy[1..500]    
+                } else {
+                    $hash.logdata = $localCopy
+                }
+                # $hash.logdata += $data
+
+            }
             # Write-Host "Data " $hash
             # save the state to file
             # Save-PodeState -Path './state.json'
@@ -88,11 +87,16 @@ Start-PodeServer -Threads 2 {
     Add-PodeRoute -Method Get -Path '/api/getlog' -ScriptBlock {
 
         Lock-PodeObject -Object $WebEvent.Lockable {
-
+            $settings = (Get-PodeState -Name 'settings')
+            $bearertoken = Get-PodeHeader -Name 'Authorization'
+            $savedtoken = $settings.token
+            if(($settings.usetoken -eq "on" -and $savedtoken -eq $bearertoken) -or $settings.usetoken -ne "on" ) {
+                $hash = (Get-PodeState -Name 'hash')
+                Write-Host $hash
+                Write-PodeJsonResponse -Value $hash.logdata
+            }
             # get the hashtable from the state and return it
-            $hash = (Get-PodeState -Name 'hash')
-            Write-Host $hash
-            Write-PodeJsonResponse -Value $hash.logdata
+
         }
     }
     # home page:
