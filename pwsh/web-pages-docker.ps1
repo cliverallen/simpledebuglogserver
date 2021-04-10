@@ -5,12 +5,12 @@ class Logdata {
     [string]$Category
 
 }
-# create a server, and start listening on port 8085
+# create a server, and start listening on port 8080
 Start-PodeServer -Threads 2 {
 
-    # listen on *:8085
+    # listen on *:8080
     Add-PodeEndpoint -Address * -Port 8080 -Protocol Http
-    Write-Host "Up and running:)"
+    Write-Host "Up and running :)"
     # set view engine to pode renderer
     Set-PodeViewEngine -Type Pode
 
@@ -25,8 +25,7 @@ Start-PodeServer -Threads 2 {
         param($username, $password)
 
         # here you'd check a real user storage, this is just for example
-        #if ($username -eq 'logmon' -and $password -eq '###PASS###') {
-            # /usr/src/app/clivebot.ps1 "User $username has logged in"
+        if ($username -eq 'logmon' -and $password -eq '###PASS###') {
             return @{
                 User = @{
                     ID ='LOG001'
@@ -34,18 +33,14 @@ Start-PodeServer -Threads 2 {
                     Type = 'Human'
                 }
             }
-        #} #else {
-        #     /usr/src/app/clivebot.ps1 "Someone tried to hack us with $username and $password"
-        # }
-
+        }
         return @{ Message = 'Invalid details supplied' }
     }
-    # Set-PodeState -Name 'hash' -Value @{ 'logdata' = @{}; } | Out-Null
     Set-PodeState -Name 'hash' -Value @{ 'logdata' = @(); } | Out-Null
     Set-PodeState -Name 'settings' -Value @{} | Out-Null
     Restore-PodeState -Path './settings.json'
-    # Set-PodeState -Name 'hash' -Value @() | Out-Null
-    # API Loging Route
+    
+    # API Add Loging Route
     Add-PodeRoute -Method Get -Path '/api/addlog' -ScriptBlock {
         Lock-PodeObject -Object $WebEvent.Lockable {
             $settings = (Get-PodeState -Name 'settings')
@@ -54,14 +49,8 @@ Start-PodeServer -Threads 2 {
             Write-Host "Token received: " $bearertoken
             Write-Host "Token required: " $settings.usetoken
             if(($settings.usetoken -eq "on" -and $savedtoken -eq $bearertoken) -or $settings.usetoken -ne "on" ) {
-
-            
-                # attempt to get the hashtable from the state
                 $hash = (Get-PodeState -Name 'hash')
-
-                # add a random number
                 $now=Get-Date
-                # $hash.logdata.Add($now,$WebEvent.Query['log'])
                 $data = [Logdata]::new()
                 $data.Category = $WebEvent.Query['category']
                 $data.Data = [uri]::UnescapeDataString($WebEvent.Query['log'])
@@ -73,15 +62,8 @@ Start-PodeServer -Threads 2 {
                 } else {
                     $hash.logdata = $localCopy
                 }
-                # $hash.logdata += $data
-
             }
-            # Write-Host "Data " $hash
-            # save the state to file
-            # Save-PodeState -Path './state.json'
         }
-        # Add-PodeFlashMessage -Name 'debugqueue' -Message 'test'
-        # Add-PodeFlashMessage -Name 'debugqueue' -Message $log
     }
     # API Getlogs Route
     Add-PodeRoute -Method Get -Path '/api/getlog' -ScriptBlock {
@@ -95,13 +77,10 @@ Start-PodeServer -Threads 2 {
                 Write-Host $hash
                 Write-PodeJsonResponse -Value $hash.logdata
             }
-            # get the hashtable from the state and return it
-
         }
     }
     # home page:
     # redirects to login page if not authenticated
-    # Add-PodeRoute -Method Get -Path '/' -Authentication Login -ScriptBlock {
     Add-PodeRoute -Method Get -Path '/' -Authentication Login -ScriptBlock {
         Lock-PodeObject -Object $WebEvent.Lockable {
 
@@ -109,26 +88,11 @@ Start-PodeServer -Threads 2 {
             $hash = (Get-PodeState -Name 'hash')
             $settings = (Get-PodeState -Name 'settings')
             $WebEvent.Session.Data.Views++
-        # Write-PodeViewResponse -Path 'simple' -Data @{ 'numbers' = @(1, 2, 3); }
             Write-PodeViewResponse -Path 'simple' -Data @{ 'datalog' = $hash; 'settings' = $settings; 'showsettings' = $WebEvent.Query['settings']; 'url' =  $WebEvent.Endpoint }
-        # Write-PodeViewResponse -Path 'auth-home' -Data @{
-        #     Username = $WebEvent.Auth.User.Name
-        #     Views = $WebEvent.Session.Data.Views
-        # }
         }
     }
-    # Add-PodeRoute -Method Get -Path '/settings' -Authentication Login -ScriptBlock {
-    #     Lock-PodeObject -Object $WebEvent.Lockable {
-    #         $settings = (Get-PodeState -Name 'settings')
-    #         $WebEvent.Session.Data.Views++
-    #         $WebEvent | Out-Default
-    #         # $WebEvent.Endpoint.keys | ForEach-Object{
-    #         #     $message = '{0} is {1}' -f $_, $WebEvent.Endpoint[$_]
-    #         #     Write-Host $message
-    #         # }
-    #         Write-PodeViewResponse -Path 'settings' -Data @{ 'settings' = $settings; 'url' =  $WebEvent.Endpoint['Address']  }
-    #     }
-    # }
+
+    # The deals with saving and displaying the settings
     Add-PodeRoute -Method Get -Path '/updatesettings' -Authentication Login -ScriptBlock {
         Lock-PodeObject -Object $WebEvent.Lockable {
             $hash = (Get-PodeState -Name 'hash')
@@ -140,18 +104,13 @@ Start-PodeServer -Threads 2 {
             }
             $settings.usetoken = $active
             $settings.token = $WebEvent.Query['tokencode']
-            
-            # $WebEvent.Query.keys | ForEach-Object{
-            #     $message = '{0} is {1}' -f $_, $WebEvent.Query[$_]
-            #     Write-Host $message
-            # }
             Write-Host $WebEvent.Query['tokenactive']  " : "  $WebEvent.Query['tokencode']
             Save-PodeState -Path './settings.json'
             Write-PodeViewResponse -Path 'simple' -Data @{ 'datalog' = $hash; 'settings' = $settings; 'showsettings' = $WebEvent.Query['settings']; }
-            # Write-PodeViewResponse -Path 'settings' -Data @{ 'settings' = $settings; }
         }
     }
 
+    # This displays the logging data
     Add-PodeRoute -Method Get -Path '/ajax' -Authentication Login -ScriptBlock {
         Lock-PodeObject -Object $WebEvent.Lockable {
 

@@ -119,7 +119,7 @@
         </div>
     </div>
 </div>
-<script src="bot.js"></script>
+<script src="helper.js"></script>
 <script src="ui.js"></script>
 
 </body>
