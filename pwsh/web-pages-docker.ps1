@@ -39,7 +39,9 @@ Start-PodeServer -Threads 2 {
     Set-PodeState -Name 'hash' -Value @{ 'logdata' = @(); } | Out-Null
     Set-PodeState -Name 'settings' -Value @{} | Out-Null
     Restore-PodeState -Path './settings.json'
-    
+    $settings = (Get-PodeState -Name 'settings')
+    $settings.token = "###TOKEN###"
+    $settings.usetoken = "on"
     # API Add Loging Route
     Add-PodeRoute -Method Get -Path '/api/addlog' -ScriptBlock {
         Lock-PodeObject -Object $WebEvent.Lockable {

@@ -1,8 +1,6 @@
 $(
-    if($null -eq $data.settings.token) {
-        $authToken =  ([char[]]([char]65..[char]90) + [char[]]([char]97..[char]122) + 0..9 | sort-object {Get-Random})[0..100] -join '';
-    } else {
-        $authToken = $data.settings.token;
+    if($data.settings.token -eq "###TOKEN###") {
+        $data.settings.token =  ([char[]]([char]65..[char]90) + [char[]]([char]97..[char]122) + 0..9 | sort-object {Get-Random})[0..100] -join '';
     }
 )
 <div >
@@ -12,7 +10,7 @@ $(
             Activate Authentication?
             <input type="checkbox" name="tokenactive" value="active" id="tokenactive" placeholder="Use Token" $(if($data.settings.usetoken -eq "on") {"checked";})/>
             Token:
-            <input type="text" size="70" name="tokencode" id="tokenCode" placeholder="Token" value="$(if($data.settings.usetoken -eq "on") {$data.settings.token} else {$authToken})"/>
+            <input type="text" size="70" name="tokencode" id="tokenCode" placeholder="Token" value="$(if($data.settings.usetoken -eq "on") {$data.settings.token})"/>
             <!--
             <input type="button" id="showToken" style="border: none;width: 30px;height: 30px;background: url(/img/show.png) no-repeat;background-size: 30px 30px;">
             -->
@@ -22,17 +20,17 @@ $(
     <div id="codeusage" style="display:block;">
         <pre><code>
         Powershell:
-        &#36;headers = @{Authorization = "$($authToken)"}
+        &#36;headers = @{Authorization = "$($data.settings.token)"}
         &#36;log='This is my string /\|@:;()*&^'
         &#36;log=[uri]::EscapeDataString(&#36;log)
         Invoke-RestMethod -Headers &#36;headers -Uri "$($data.url.Protocol)://$($data.url.Address)/api/addlog?log=&#36;log&category=info"
 
         cURL:
-        curl -H "Authorization: $($authToken)" "$($data.url.Protocol)://$($data.url.Address)/api/addlog?log=logdatagoeshere&category=info"
+        curl -H "Authorization: $($data.settings.token)" "$($data.url.Protocol)://$($data.url.Address)/api/addlog?log=logdatagoeshere&category=info"
 
         python:
         import requests,urllib.parse
-        auth_token='$($authToken)'
+        auth_token='$($data.settings.token)'
         header = {'Authorization' : auth_token}
         log={'log':'This is my string /\|@:;()*&^'}
         encodedlog = urllib.parse.urlencode(log)

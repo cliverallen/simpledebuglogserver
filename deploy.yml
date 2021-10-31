@@ -34,6 +34,9 @@ variables:
   #Password used to login to the app. Generated autoatically in the powershell task
   Password: ''
 
+  #AuthToken used to log data
+  Authtoken: ''
+
   # ========================================================================
   #                           Optional variables
   # ========================================================================
