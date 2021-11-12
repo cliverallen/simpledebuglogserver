@@ -81,6 +81,46 @@ Start-PodeServer -Threads 2 {
             }
         }
     }
+    Add-PodeTimer -Name 'logQueue' -Interval 2 -ScriptBlock {
+        Write-Host "Template Timer"
+    }
+    # API Get Stroage Queue data
+    Add-PodeRoute -Method Get -Path '/api/queuelog' -ScriptBlock {
+        Lock-PodeObject -Object $WebEvent.Lockable {
+            $settings = (Get-PodeState -Name 'settings')
+            $settings.connectionString = [uri]::UnescapeDataString($WebEvent.Query['con'])
+            Write-Host $connectionString
+            $settings.queueName = [uri]::UnescapeDataString($WebEvent.Query['queue'])
+            Write-Host $queueName
+            $interval = [uri]::UnescapeDataString($WebEvent.Query['interval'])
+            Write-Host $interval
+            Write-Host "Watching queue called"
+        }
+        Edit-PodeTimer -Name 'logQueue' -Interval $interval -ScriptBlock {
+            $settings = (Get-PodeState -Name 'settings')
+            Write-Host "Queue Timer called"
+            Write-Host $settings.queueName
+            Write-host $settings.connectionString
+            $messages = (az storage message get --queue-name $settings.queueName --connection-string $settings.connectionString --num-messages 32)
+            Write-Host $messages
+            foreach ($message in $messages) {
+                $hash = (Get-PodeState -Name 'hash')
+                $now=Get-Date
+                $data = [Logdata]::new()
+                $data.Category = 'info'
+                $data.Data = $message.content
+                Write-Host $message.content
+                $data.Timestamp = $now
+                $localCopy = $hash.logdata.Clone()
+                $localCopy += $data
+                if($localCopy.Count -gt 500) {
+                    $hash.logdata = $localCopy[1..500]    
+                } else {
+                    $hash.logdata = $localCopy
+                }
+            }
+        }
+    }
     # home page:
     # redirects to login page if not authenticated
     Add-PodeRoute -Method Get -Path '/' -Authentication Login -ScriptBlock {
