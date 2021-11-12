@@ -101,7 +101,7 @@ Start-PodeServer -Threads 2 {
             Write-Host "Queue Timer called"
             Write-Host $settings.queueName
             Write-host $settings.connectionString
-            $messages = (az storage message get --queue-name $settings.queueName --connection-string $settings.connectionString --num-messages 32)
+            $messages = (az storage message get --queue-name $settings.queueName --connection-string $settings.connectionString --num-messages 32) | ConvertFrom-Json
             Write-Host $messages
             foreach ($message in $messages) {
                 $hash = (Get-PodeState -Name 'hash')
