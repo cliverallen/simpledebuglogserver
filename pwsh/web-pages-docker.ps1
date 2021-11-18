@@ -104,6 +104,7 @@ Start-PodeServer -Threads 2 {
             $messages = (az storage message get --queue-name $settings.queueName --connection-string $settings.connectionString --num-messages 32) | ConvertFrom-Json
             Write-Host $messages
             foreach ($message in $messages) {
+                az storage message delete --id $message.id --pop-receipt $message.popReceipt --queue-name $settings.queueName --connection-string $settings.connectionString
                 $hash = (Get-PodeState -Name 'hash')
                 $now=Get-Date
                 $data = [Logdata]::new()
